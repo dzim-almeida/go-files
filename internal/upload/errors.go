@@ -14,6 +14,12 @@ const (
 	ErrCodeMaxSizeExceeded    CodeError = "FILE_TOO_LARGE"
 	ErrCodeInvalidContentType CodeError = "INVALID_CONTENT_TYPE"
 	ErrCodeVirusDetected      CodeError = "VIRUS_DETECTED"
+	ErrProcessingError        CodeError = "PROCESSING_ERROR"
+	ErrSaveError              CodeError = "SAVE_ERROR"
+	ErrDeleteError            CodeError = "DELETE_ERROR"
+	ErrNotFound               CodeError = "NOT_FOUND"
+	ErrBadRequest             CodeError = "BAD_REQUEST"
+	ErrInternalServerError    CodeError = "INTERNAL_SERVER_ERROR"
 )
 
 type UploadError struct {
@@ -76,7 +82,7 @@ func NewVirusDetectedError(desc string) error {
 
 func NewProcessingError() error {
 	return &UploadError{
-		Code:       "PROCESSING_ERROR",
+		Code:       ErrProcessingError,
 		Message:    "falha ao processar o arquivo enviado",
 		HTTPStatus: http.StatusInternalServerError,
 	}
@@ -84,16 +90,40 @@ func NewProcessingError() error {
 
 func NewSaveError() error {
 	return &UploadError{
-		Code:       "SAVE_ERROR",
+		Code:       ErrSaveError,
 		Message:    "falha ao salvar o arquivo enviado",
 		HTTPStatus: http.StatusInternalServerError,
 	}
 }
 
+func NewDeleteError() error {
+	return &UploadError{
+		Code:       ErrDeleteError,
+		Message:    "falha ao deletar o arquivo",
+		HTTPStatus: http.StatusInternalServerError,
+	}
+}
+
+func NewNotFoundError() error {
+	return &UploadError{
+		Code:       ErrNotFound,
+		Message:    "arquivo não encontrado",
+		HTTPStatus: http.StatusNotFound,
+	}
+}
+
 func NewBadRequestError(message string) error {
 	return &UploadError{
-		Code:       "BAD_REQUEST",
+		Code:      	ErrBadRequest,
 		Message:    message,
 		HTTPStatus: http.StatusBadRequest,
+	}
+}
+
+func NewInternalServerError() error {
+	return &UploadError{
+		Code:       ErrInternalServerError,
+		Message:    "erro interno do servidor",
+		HTTPStatus: http.StatusInternalServerError,
 	}
 }

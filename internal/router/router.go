@@ -28,7 +28,11 @@ func NewRouter() *gin.Engine {
 	
 	handler := upload.NewHandler(service)
 
-	router.POST("/upload", handler.Upload)
+	router.POST("/uploads", handler.Upload)
+	router.GET("/uploads", handler.GetUploads)
+	router.GET("/uploads/:id", handler.FindUploadById)
+	router.GET("/uploads/filename/:filename", handler.FindUploadByOriginalFilename)
+	router.DELETE("/uploads/:id", handler.DeleteUpload)
 
 	return router
 }

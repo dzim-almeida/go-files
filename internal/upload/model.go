@@ -1,7 +1,8 @@
 package upload
 
 type UploadModel struct {
-	OrinialFileName string
+	ID              int
+	OriginalFileName string
 	StoredFileName  string
 	StoragePath     string
 	ContentType     string

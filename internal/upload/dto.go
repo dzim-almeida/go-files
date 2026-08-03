@@ -15,5 +15,5 @@ type UploadOutput struct {
 	StoredFileName   string `json:"stored_filename"`
 	StoragePath      string `json:"storage_path"`
 	ContetType       string `json:"content_type"`
-	Size             int64  `json:"size"`
+	Size             int64  `json:"size_bytes"`
 }

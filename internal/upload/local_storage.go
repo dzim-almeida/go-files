@@ -43,5 +43,15 @@ func (l *LocalStorage) Save(reader io.Reader, filename string) (string, error) {
 }
 
 func (l *LocalStorage) Delete(path string) error {
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return NewNotFoundError()
+	}
+
+	err := os.Remove(path)
+
+	if err != nil {
+		return NewDeleteError()
+	}
+
 	return nil
 }

@@ -3,7 +3,8 @@ package upload
 import (
 	"errors"
 	"net/http"
-	
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,9 +18,9 @@ func NewHandler(service UploadService) *Handler {
 	}
 }
 
-func (h *Handler) Upload(c *gin.Context) {
-	var uploadError *UploadError
+var uploadError *UploadError
 
+func (h *Handler) Upload(c *gin.Context) {
 	fileHeader, err := c.FormFile("file")
 
 	if err != nil {
@@ -68,4 +69,87 @@ func (h *Handler) Upload(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, output)
+}
+
+func (h *Handler) GetUploads(c *gin.Context) {
+	uploads, err := h.service.GetUploads()
+
+	if errors.As(err, &uploadError) {
+		c.JSON(uploadError.HTTPStatus, gin.H{
+			"code": uploadError.Code,
+			"message": uploadError.Message,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, uploads)
+}
+
+func (h *Handler) FindUploadById(c *gin.Context) {
+	id := c.Param("id")
+
+	uploadId, err := strconv.Atoi(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code": "INVALID_ID",
+			"message": "o id fornecido é inválido",
+		})
+		return
+	}
+
+	upload, err := h.service.FindUploadById(uploadId)
+
+	if errors.As(err, &uploadError) {
+		c.JSON(uploadError.HTTPStatus, gin.H{
+			"code": uploadError.Code,
+			"message": uploadError.Message,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, upload)
+}
+
+func (h *Handler) FindUploadByOriginalFilename(c *gin.Context) {
+	filename := c.Param("filename")
+
+	uploads, err := h.service.FindUploadByOrgininalFilename(filename)
+
+	if errors.As(err, &uploadError) {
+		c.JSON(uploadError.HTTPStatus, gin.H{
+			"code": uploadError.Code,
+			"message": uploadError.Message,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, uploads)
+}
+
+func (h *Handler) DeleteUpload(c *gin.Context) {
+	id := c.Param("id")
+
+	uploadId, err := strconv.Atoi(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code": "INVALID_ID",
+			"message": "o id fornecido é inválido",
+		})
+		return
+	}
+
+	err = h.service.DeleteUpload(uploadId)
+
+	if errors.As(err, &uploadError) {
+		c.JSON(uploadError.HTTPStatus, gin.H{
+			"code": uploadError.Code,
+			"message": uploadError.Message,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code": "UPLOAD_DELETED",
+		"message": "upload deletado com sucesso",
+	})
 }
