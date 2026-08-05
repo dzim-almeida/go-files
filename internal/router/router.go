@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/dzim-almeida/go-files/internal/database/postgres"
+	"github.com/dzim-almeida/go-files/internal/logger"
 	"github.com/dzim-almeida/go-files/internal/upload"
 	"github.com/gin-gonic/gin"
 )
@@ -20,10 +21,13 @@ func NewRouter() *gin.Engine {
 		},
 	)
 
+	logger := logger.NewLogger()
+
 	service := upload.NewService(
 		storage,
 		validator,
 		repository,
+		logger,
 	)
 	
 	handler := upload.NewHandler(service)
